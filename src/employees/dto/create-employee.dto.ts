@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsString, Length, IsEmail, IsDate } from 'class-validator';
 
 export class CreateEmployeeDto {
@@ -12,6 +13,7 @@ export class CreateEmployeeDto {
   @Length(6, 32)
   position: string;
 
+  @Type(() => Date)
   @IsDate()
   joiningDate: string;
 }
