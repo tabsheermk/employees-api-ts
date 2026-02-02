@@ -1,14 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
-import { EmployeeService } from 'src/service/employee.service';
+import { EmployeesService } from 'src/service/employees.service';
 
 @Controller('employees')
-export class EmployeeController {
-  constructor(private readonly employeeService: EmployeeService) {
-    this.employeeService = employeeService;
+export class EmployeesController {
+  constructor(private readonly employeesService: EmployeesService) {
+    this.employeesService = employeesService;
   }
 
   @Get()
   getEmployees(): string {
-    return this.employeeService.getEmployees();
+    return this.employeesService.getEmployees();
   }
 }
