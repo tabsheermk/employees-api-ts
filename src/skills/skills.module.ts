@@ -10,5 +10,6 @@ import { Skill, SkillSchema } from './schema/skills.schema';
   ],
   controllers: [SkillsController],
   providers: [SkillsService],
+  exports: [MongooseModule],
 })
 export class SkillsModule {}

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { Skill } from 'src/skills/schema/skills.schema';
 
 export type EmployeeDocument = HydratedDocument<Employee>;
 
@@ -16,6 +17,9 @@ export class Employee {
 
   @Prop()
   joiningDate: string;
+
+  @Prop({ required: false })
+  skills: Skill[];
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);
