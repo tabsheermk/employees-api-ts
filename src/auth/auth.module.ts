@@ -14,6 +14,7 @@ import { EmployeesModule } from 'src/employees/employees.module';
       }),
       inject: [ConfigService],
     }),
+
     EmployeesModule,
   ],
   controllers: [AuthController],

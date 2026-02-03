@@ -20,6 +20,7 @@ export class EmployeesService {
 
   async addEmployee(req: CreateEmployeeDto): Promise<Employee> {
     const createdEmployee = new this.employeeModel(req);
+    createdEmployee.role = 'employee';
     return createdEmployee.save();
   }
 

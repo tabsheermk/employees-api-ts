@@ -19,7 +19,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async login(signupDto: LoginDto): Promise<string> {
+  async login(signupDto: LoginDto): Promise<{ accessToken: string }> {
     const { email, password } = signupDto;
 
     let employee = await this.employeeModel.findOne({ email: email });
@@ -31,7 +31,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     if (employee.role === 'admin') {
-      const isMatch = bcrypt.compare(password, employee.password);
+      const isMatch = await bcrypt.compare(password, employee.password);
 
       if (!isMatch) {
         throw new BadRequestException("Password doesn't match");
@@ -46,10 +46,14 @@ export class AuthService {
     }
 
     const token = this.jwtService.sign(
-      { id: employee?._id },
-      { secret: this.configService.get<string>('JWT_SECRET') },
+      { id: employee?._id, role: employee?.role },
+      {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      },
     );
 
-    return token;
+    return {
+      accessToken: token,
+    };
   }
 }
