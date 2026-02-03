@@ -6,12 +6,14 @@ import { AddSkillDto } from './dto/add-skill.dto';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { Employee } from './schema/employees.schema';
+import { AnalyticsService } from 'src/analytics/analytics.service';
 
 @Injectable()
 export class EmployeesService {
   constructor(
     @InjectModel(Employee.name) private employeeModel: Model<Employee>,
     @InjectModel(Skill.name) private skillModel: Model<Skill>,
+    private readonly analyticsService: AnalyticsService,
   ) {}
 
   async getEmployees(): Promise<Employee[]> {
@@ -55,9 +57,12 @@ export class EmployeesService {
       throw new NotFoundException('Skill Not Found for the given skill name');
     }
 
+    const score = this.analyticsService.calculateEngagementScore(id);
+    const engageScore = (await score).slice(0, 2);
+
     const updatedEmployee = await this.employeeModel.findByIdAndUpdate(
       { _id: new Types.ObjectId(id) },
-      { $push: { skills: skill } },
+      { $push: { skills: skill }, engagementScore: engageScore },
       { new: true },
     );
 

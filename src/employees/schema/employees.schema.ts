@@ -28,6 +28,9 @@ export class Employee {
 
   @Prop({ required: false })
   skills: Skill[];
+
+  @Prop()
+  engagementScore: number;
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);

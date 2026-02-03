@@ -4,6 +4,7 @@ import { EmployeesController } from 'src/employees/employees.controller';
 import { EmployeesService } from 'src/employees/employees.service';
 import { Employee, EmployeeSchema } from './schema/employees.schema';
 import { SkillsModule } from 'src/skills/skills.module';
+import { AnalyticsModule } from 'src/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { SkillsModule } from 'src/skills/skills.module';
       { name: Employee.name, schema: EmployeeSchema },
     ]),
     SkillsModule,
+    AnalyticsModule,
   ],
   controllers: [EmployeesController],
   providers: [EmployeesService],
