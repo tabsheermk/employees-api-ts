@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Employee } from './schema/employees.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { Skill } from 'src/skills/schema/skills.schema';
+import { AddSkillDto } from './dto/add-skill.dto';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { AddSkillDto } from './dto/add-skill.dto';
-import { Skill } from 'src/skills/schema/skills.schema';
+import { Employee } from './schema/employees.schema';
 
 @Injectable()
 export class EmployeesService {
@@ -66,5 +66,16 @@ export class EmployeesService {
     }
 
     return updatedEmployee;
+  }
+
+  async getPopularSkills(): Promise<Skill[]> {
+    const skills = await this.employeeModel.aggregate([
+      { $unwind: '$skills' },
+      { $group: { _id: '$skills', count: { $sum: 1 } } },
+      { $project: { _id: 0, skill: '$_id', count: 1 } },
+      { $sort: { count: -1 } },
+    ]);
+
+    return skills;
   }
 }

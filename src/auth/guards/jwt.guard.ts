@@ -12,7 +12,7 @@ export class JwtGuard implements CanActivate {
   constructor(private readonly configService: ConfigService) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const req: Request = context.switchToHttp().getRequest();
+    const req = context.switchToHttp().getRequest();
     const authHeader = req.headers.authorization;
 
     if (!authHeader) throw new UnauthorizedException('Missing token');

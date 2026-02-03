@@ -1,22 +1,23 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Put,
+  Controller,
   Delete,
+  Get,
   Param,
+  Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
-import { EmployeesService } from 'src/employees/employees.service';
-import { CreateEmployeeDto } from './dto/create-employee.dto';
-import { Employee } from './schema/employees.schema';
-import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { AddSkillDto } from './dto/add-skill.dto';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enum/roles.enum';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { EmployeesService } from 'src/employees/employees.service';
+import { Skill } from 'src/skills/schema/skills.schema';
+import { AddSkillDto } from './dto/add-skill.dto';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { Employee } from './schema/employees.schema';
 
 @Controller('employees')
 export class EmployeesController {
@@ -52,5 +53,10 @@ export class EmployeesController {
     @Body() req: AddSkillDto,
   ): Promise<Employee> {
     return this.employeesService.addSkills(req, id);
+  }
+
+  @Get('/reports/popular-skills')
+  getSkillsByPopularity(): Promise<Skill[]> {
+    return this.employeesService.getPopularSkills();
   }
 }
