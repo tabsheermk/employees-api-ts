@@ -4,6 +4,8 @@ import { Skill } from 'src/skills/schema/skills.schema';
 
 export type EmployeeDocument = HydratedDocument<Employee>;
 
+export type ROLE = 'admin' | 'employee';
+
 @Schema()
 export class Employee {
   @Prop()
@@ -11,6 +13,12 @@ export class Employee {
 
   @Prop()
   email: string;
+
+  @Prop()
+  password: string;
+
+  @Prop()
+  role: ROLE;
 
   @Prop()
   position: string;

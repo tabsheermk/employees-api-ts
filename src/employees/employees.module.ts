@@ -14,5 +14,6 @@ import { SkillsModule } from 'src/skills/skills.module';
   ],
   controllers: [EmployeesController],
   providers: [EmployeesService],
+  exports: [MongooseModule],
 })
 export class EmployeesModule {}
