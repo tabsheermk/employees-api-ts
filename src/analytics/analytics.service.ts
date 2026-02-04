@@ -8,8 +8,8 @@ export class AnalyticsService {
     private employeesService: EmployeesService,
   ) {}
 
-  async calculateEngagementScore(id: string): Promise<string> {
+  async calculateEngagementScore(id: string): Promise<{ score: number }> {
     const score = await this.employeesService.calculateEngagementScore(id);
-    return 'Engagement score is: ' + score;
+    return { score };
   }
 }
