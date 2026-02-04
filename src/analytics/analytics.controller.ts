@@ -5,6 +5,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enum/roles.enum';
 import {
+  ApiBearerAuth,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiUnauthorizedResponse,
@@ -22,6 +23,7 @@ export class AnalyticsController {
   @ApiOkResponse({ type: ApiResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })
+  @ApiBearerAuth('jwt')
   getEngagementScore(@Param('id') id: string): Promise<{ score: number }> {
     return this.analyticsService.calculateEngagementScore(id);
   }

@@ -20,6 +20,7 @@ import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { Employee } from './schema/employees.schema';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -51,6 +52,7 @@ export class EmployeesController {
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiOkResponse({ type: ApiResponseDto })
+  @ApiBearerAuth('jwt')
   updateEmployee(
     @Body() req: UpdateEmployeeDto,
     @Param('id') id: string,
@@ -64,6 +66,7 @@ export class EmployeesController {
   @ApiOkResponse({ type: ApiResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })
+  @ApiBearerAuth('jwt')
   deleteEmployee(@Param('id') id: string): Promise<string> {
     return this.employeesService.deleteEmployee(id);
   }
@@ -83,6 +86,7 @@ export class EmployeesController {
   @Roles(Role.Admin)
   @ApiOkResponse({ type: ApiResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  @ApiBearerAuth('jwt')
   getSkillsByPopularity(): Promise<Skill[]> {
     return this.employeesService.getPopularSkills();
   }

@@ -15,6 +15,14 @@ async function bootstrap() {
     .setDescription('Employee management API')
     .setVersion('1.0')
     .addTag('employee', 'skills')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'jwt',
+    )
     .build();
 
   const documentFactory = () =>

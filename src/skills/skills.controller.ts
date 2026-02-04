@@ -18,6 +18,7 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -47,6 +48,7 @@ export class SkillsController {
   @ApiOkResponse({ type: ApiResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })
+  @ApiBearerAuth('jwt')
   updateSkill(@Body() req: UpdateSkill): Promise<Skill> {
     return this.skillsService.updateSkill(req);
   }
@@ -57,6 +59,7 @@ export class SkillsController {
   @ApiOkResponse({ type: ApiResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })
+  @ApiBearerAuth('jwt')
   deleteSkill(@Param('skill') skill: string): Promise<string> {
     return this.skillsService.deleteSkill(skill);
   }
