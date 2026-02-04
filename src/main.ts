@@ -14,7 +14,6 @@ async function bootstrap() {
     .setTitle('Employees API')
     .setDescription('Employee management API')
     .setVersion('1.0')
-    .addTag('employee', 'skills')
     .addBearerAuth(
       {
         type: 'http',
