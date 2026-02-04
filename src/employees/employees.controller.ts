@@ -18,8 +18,16 @@ import { AddSkillDto } from './dto/add-skill.dto';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { Employee } from './schema/employees.schema';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { ApiResponseDto } from 'src/common/swagger/generic-success-response';
+import { ErrorResponseDto } from 'src/common/swagger/generic-failure-response';
 
 @ApiTags('employees')
 @Controller('employees')
@@ -27,19 +35,14 @@ export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   @Get()
-  @ApiResponse({
-    status: 200,
-    type: ApiResponseDto,
-  })
+  @ApiOkResponse({ type: ApiResponseDto })
   getEmployees(): Promise<Employee[]> {
     return this.employeesService.getEmployees();
   }
 
   @Post()
-  @ApiResponse({
-    status: 201,
-    type: ApiResponseDto,
-  })
+  @ApiCreatedResponse({ type: ApiResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
   createEmployee(@Body() req: CreateEmployeeDto): Promise<Employee> {
     return this.employeesService.addEmployee(req);
   }
@@ -47,10 +50,7 @@ export class EmployeesController {
   @Put(':id')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
-  @ApiResponse({
-    status: 200,
-    type: ApiResponseDto,
-  })
+  @ApiOkResponse({ type: ApiResponseDto })
   updateEmployee(
     @Body() req: UpdateEmployeeDto,
     @Param('id') id: string,
@@ -61,19 +61,16 @@ export class EmployeesController {
   @Delete(':id')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
-  @ApiResponse({
-    status: 200,
-    type: ApiResponseDto,
-  })
+  @ApiOkResponse({ type: ApiResponseDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
   deleteEmployee(@Param('id') id: string): Promise<string> {
     return this.employeesService.deleteEmployee(id);
   }
 
   @Post(':id/skills')
-  @ApiResponse({
-    status: 201,
-    type: ApiResponseDto,
-  })
+  @ApiCreatedResponse({ type: ApiResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
   addSkills(
     @Param('id') id: string,
     @Body() req: AddSkillDto,
@@ -84,10 +81,8 @@ export class EmployeesController {
   @Get('/reports/popular-skills')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
-  @ApiResponse({
-    status: 200,
-    type: ApiResponseDto,
-  })
+  @ApiOkResponse({ type: ApiResponseDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   getSkillsByPopularity(): Promise<Skill[]> {
     return this.employeesService.getPopularSkills();
   }

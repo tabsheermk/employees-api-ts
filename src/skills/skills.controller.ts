@@ -16,27 +16,37 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enum/roles.enum';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { ApiResponseDto } from 'src/common/swagger/generic-success-response';
+import { ErrorResponseDto } from 'src/common/swagger/generic-failure-response';
 
 @Controller('skills')
 export class SkillsController {
   constructor(private readonly skillsService: SkillsService) {}
 
   @Get()
-  @ApiResponse({ status: 200, type: ApiResponseDto })
+  @ApiOkResponse({ type: ApiResponseDto })
   getSkills(): Promise<Skill[]> {
     return this.skillsService.getSkills();
   }
 
   @Post()
-  @ApiResponse({ status: 201, type: ApiResponseDto })
+  @ApiCreatedResponse({ type: ApiResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
   addSkill(@Body() req: CreateSkill): Promise<Skill> {
     return this.skillsService.addSkill(req);
   }
 
   @Put()
-  @ApiResponse({ status: 200, type: ApiResponseDto })
+  @ApiOkResponse({ type: ApiResponseDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
   updateSkill(@Body() req: UpdateSkill): Promise<Skill> {
     return this.skillsService.updateSkill(req);
   }
@@ -44,7 +54,9 @@ export class SkillsController {
   @Delete(':skill')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
-  @ApiResponse({ status: 200, type: ApiResponseDto })
+  @ApiOkResponse({ type: ApiResponseDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
   deleteSkill(@Param('skill') skill: string): Promise<string> {
     return this.skillsService.deleteSkill(skill);
   }

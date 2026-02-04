@@ -103,6 +103,14 @@ export class EmployeesService {
   }
 
   async calculateEngagementScore(employeeId: string): Promise<number> {
+    const employee = await this.employeeModel.findById({
+      _id: new Types.ObjectId(employeeId),
+    });
+
+    if (!employee) {
+      throw new NotFoundException('Employee not found');
+    }
+
     const engagementScore = await this.employeeModel.aggregate([
       {
         $match: {
