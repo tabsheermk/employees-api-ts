@@ -50,8 +50,10 @@ export class EmployeesService {
     return updatedEmployee;
   }
 
-  async deleteEmployee(email: string): Promise<string> {
-    const employee = await this.employeeModel.findOneAndDelete({ email });
+  async deleteEmployee(id: string): Promise<string> {
+    const employee = await this.employeeModel.findByIdAndDelete({
+      _id: new Types.ObjectId(id),
+    });
 
     if (!employee) {
       throw new NotFoundException('Employee not found');

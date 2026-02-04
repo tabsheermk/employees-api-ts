@@ -18,17 +18,28 @@ import { AddSkillDto } from './dto/add-skill.dto';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { Employee } from './schema/employees.schema';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiResponseDto } from 'src/common/swagger/generic-success-response';
 
+@ApiTags('employees')
 @Controller('employees')
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   @Get()
+  @ApiResponse({
+    status: 200,
+    type: ApiResponseDto,
+  })
   getEmployees(): Promise<Employee[]> {
     return this.employeesService.getEmployees();
   }
 
   @Post()
+  @ApiResponse({
+    status: 201,
+    type: ApiResponseDto,
+  })
   createEmployee(@Body() req: CreateEmployeeDto): Promise<Employee> {
     return this.employeesService.addEmployee(req);
   }
@@ -36,6 +47,10 @@ export class EmployeesController {
   @Put(':id')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
+  @ApiResponse({
+    status: 200,
+    type: ApiResponseDto,
+  })
   updateEmployee(
     @Body() req: UpdateEmployeeDto,
     @Param('id') id: string,
@@ -43,14 +58,22 @@ export class EmployeesController {
     return this.employeesService.updateEmployee(req, id);
   }
 
-  @Delete(':email')
+  @Delete(':id')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
-  deleteEmployee(@Param('email') email: string): Promise<string> {
-    return this.employeesService.deleteEmployee(email);
+  @ApiResponse({
+    status: 200,
+    type: ApiResponseDto,
+  })
+  deleteEmployee(@Param('id') id: string): Promise<string> {
+    return this.employeesService.deleteEmployee(id);
   }
 
   @Post(':id/skills')
+  @ApiResponse({
+    status: 201,
+    type: ApiResponseDto,
+  })
   addSkills(
     @Param('id') id: string,
     @Body() req: AddSkillDto,
@@ -59,6 +82,12 @@ export class EmployeesController {
   }
 
   @Get('/reports/popular-skills')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiResponse({
+    status: 200,
+    type: ApiResponseDto,
+  })
   getSkillsByPopularity(): Promise<Skill[]> {
     return this.employeesService.getPopularSkills();
   }
