@@ -9,7 +9,7 @@ export type ROLE = 'admin' | 'employee';
 @Schema()
 export class Employee {
   @Prop()
-  name: string;
+  employeeName: string;
 
   @Prop()
   email: string;

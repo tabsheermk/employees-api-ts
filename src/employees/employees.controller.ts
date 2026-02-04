@@ -33,11 +33,14 @@ export class EmployeesController {
     return this.employeesService.addEmployee(req);
   }
 
-  @Put()
+  @Put(':id')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
-  updateEmployee(@Body() req: UpdateEmployeeDto): Promise<Employee> {
-    return this.employeesService.updateEmployee(req);
+  updateEmployee(
+    @Body() req: UpdateEmployeeDto,
+    @Param('id') id: string,
+  ): Promise<Employee> {
+    return this.employeesService.updateEmployee(req, id);
   }
 
   @Delete(':email')

@@ -32,10 +32,14 @@ export class EmployeesService {
     return createdEmployee.save();
   }
 
-  async updateEmployee(req: UpdateEmployeeDto): Promise<Employee> {
-    const updatedEmployee = await this.employeeModel.findOneAndUpdate(
-      { email: req.email },
-      { position: req.position },
+  async updateEmployee(req: UpdateEmployeeDto, id: string): Promise<Employee> {
+    const updatedEmployee = await this.employeeModel.findByIdAndUpdate(
+      { _id: new Types.ObjectId(id) },
+      {
+        position: req.position,
+        employeeName: req.employeeName,
+        email: req.email,
+      },
       { new: true },
     );
 
