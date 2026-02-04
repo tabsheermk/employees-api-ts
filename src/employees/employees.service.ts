@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Skill } from 'src/skills/schema/skills.schema';
@@ -13,6 +18,7 @@ export class EmployeesService {
   constructor(
     @InjectModel(Employee.name) private employeeModel: Model<Employee>,
     @InjectModel(Skill.name) private skillModel: Model<Skill>,
+    @Inject(forwardRef(() => AnalyticsService))
     private readonly analyticsService: AnalyticsService,
   ) {}
 
@@ -57,12 +63,18 @@ export class EmployeesService {
       throw new NotFoundException('Skill Not Found for the given skill name');
     }
 
-    const score = this.analyticsService.calculateEngagementScore(id);
-    const engageScore = (await score).slice(0, 2);
-
-    const updatedEmployee = await this.employeeModel.findByIdAndUpdate(
+    let updatedEmployee = await this.employeeModel.findByIdAndUpdate(
       { _id: new Types.ObjectId(id) },
-      { $push: { skills: skill }, engagementScore: engageScore },
+      { $push: { skills: skill } },
+    );
+
+    const engageScore = await this.calculateEngagementScore(id);
+
+    updatedEmployee = await this.employeeModel.findByIdAndUpdate(
+      {
+        _id: new Types.ObjectId(id),
+      },
+      { engagementScore: engageScore },
       { new: true },
     );
 
@@ -82,5 +94,60 @@ export class EmployeesService {
     ]);
 
     return skills;
+  }
+
+  async calculateEngagementScore(employeeId: string): Promise<number> {
+    const engagementScore = await this.employeeModel.aggregate([
+      {
+        $match: {
+          _id: new Types.ObjectId(employeeId),
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          skillsCount: {
+            $size: {
+              $ifNull: ['$skills', []],
+            },
+          },
+          joiningDate: {
+            $toDate: {
+              $substr: ['$joiningDate', 0, 24],
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          yearsSinceHire: {
+            $divide: [
+              {
+                $subtract: [new Date(), '$joiningDate'],
+              },
+              1000 * 60 * 60 * 24 * 365,
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          score: {
+            $round: [
+              {
+                $add: [
+                  { $multiply: ['$skillsCount', 10] },
+                  { $multiply: ['$yearsSinceHire', 5] },
+                ],
+              },
+              0,
+            ],
+          },
+        },
+      },
+    ]);
+
+    return engagementScore[0].score;
   }
 }
