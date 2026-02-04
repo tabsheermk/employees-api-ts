@@ -8,6 +8,7 @@ import {
   ApiBearerAuth,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ApiResponseDto } from 'src/common/swagger/generic-success-response';
@@ -20,6 +21,10 @@ export class AnalyticsController {
   @Get(':id')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
+  @ApiOperation({
+    summary: 'Get Engagement Score',
+    description: 'calcuate engagement score and give to user',
+  })
   @ApiOkResponse({ type: ApiResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })

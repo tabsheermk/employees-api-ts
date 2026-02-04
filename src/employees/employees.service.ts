@@ -26,6 +26,18 @@ export class EmployeesService {
     return this.employeeModel.find().exec();
   }
 
+  async getEmployeeByID(id: string): Promise<Employee> {
+    const employee = await this.employeeModel.findById({
+      _id: new Types.ObjectId(id),
+    });
+
+    if (!employee) {
+      throw new NotFoundException('Employee not found');
+    }
+
+    return employee;
+  }
+
   async addEmployee(req: CreateEmployeeDto): Promise<Employee> {
     const createdEmployee = new this.employeeModel(req);
     createdEmployee.role = 'employee';

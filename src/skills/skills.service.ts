@@ -13,6 +13,18 @@ export class SkillsService {
     return this.skillModel.find().exec();
   }
 
+  async getSkillByName(name: string): Promise<Skill> {
+    const skill = await this.skillModel.findOne({
+      name,
+    });
+
+    if (!skill) {
+      throw new NotFoundException('Skill not found');
+    }
+
+    return skill;
+  }
+
   async addSkill(skill: CreateSkill): Promise<Skill> {
     const createdSkill = new this.skillModel(skill);
     return createdSkill.save();

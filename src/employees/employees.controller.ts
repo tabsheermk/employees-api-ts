@@ -24,6 +24,7 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -36,12 +37,31 @@ export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'Get all employees',
+    description: 'Fetch all employees',
+  })
   @ApiOkResponse({ type: ApiResponseDto })
   getEmployees(): Promise<Employee[]> {
     return this.employeesService.getEmployees();
   }
 
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Get employee by ID',
+    description: 'Fetch individual employee details',
+  })
+  @ApiOkResponse({ type: ApiResponseDto })
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
+  getEmployee(@Param('id') id: string): Promise<Employee> {
+    return this.employeesService.getEmployeeByID(id);
+  }
+
   @Post()
+  @ApiOperation({
+    summary: 'Create employee',
+    description: 'Create a new employee in the system',
+  })
   @ApiCreatedResponse({ type: ApiResponseDto })
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   createEmployee(@Body() req: CreateEmployeeDto): Promise<Employee> {
@@ -51,6 +71,10 @@ export class EmployeesController {
   @Put(':id')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
+  @ApiOperation({
+    summary: 'Update Employee by ID',
+    description: 'update individual employee details',
+  })
   @ApiOkResponse({ type: ApiResponseDto })
   @ApiBearerAuth('jwt')
   updateEmployee(
@@ -63,6 +87,10 @@ export class EmployeesController {
   @Delete(':id')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
+  @ApiOperation({
+    summary: 'Delete Employee',
+    description: 'delete an employee',
+  })
   @ApiOkResponse({ type: ApiResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })
@@ -72,6 +100,10 @@ export class EmployeesController {
   }
 
   @Post(':id/skills')
+  @ApiOperation({
+    summary: 'Add skill to an employee',
+    description: "Add new skill  to employee's skills",
+  })
   @ApiCreatedResponse({ type: ApiResponseDto })
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   addSkills(
@@ -84,6 +116,11 @@ export class EmployeesController {
   @Get('/reports/popular-skills')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(Role.Admin)
+  @ApiOperation({
+    summary: 'Get popular skills',
+    description:
+      'Perform an aggregation and get the most popular skills among the employees',
+  })
   @ApiOkResponse({ type: ApiResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   @ApiBearerAuth('jwt')
