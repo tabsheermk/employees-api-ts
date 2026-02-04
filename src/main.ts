@@ -4,13 +4,22 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-
   const port = configService.get<number>('SERVER_PORT', 3009);
-  console.log('PORT ' + port);
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Employees API')
+    .setDescription('Employee management API')
+    .setVersion('1.0')
+    .addTag('employee', 'skills')
+    .build();
+
+  const documentFactory = () =>
+    SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, documentFactory);
 
   app.useGlobalPipes(
     new ValidationPipe({
