@@ -10,7 +10,7 @@ import { Skill } from 'src/skills/schema/skills.schema';
 import { AddSkillDto } from './dto/add-skill.dto';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { Employee } from './schema/employees.schema';
+import { Employee, EmployeeDocument } from './schema/employees.schema';
 import { AnalyticsService } from 'src/analytics/analytics.service';
 
 @Injectable()
@@ -38,6 +38,16 @@ export class EmployeesService {
     return employee;
   }
 
+  async getEmployeeByEmail(email: string): Promise<Employee> {
+    const employee = await this.employeeModel.findOne({ email: email });
+
+    if (!employee) {
+      throw new NotFoundException('Employee Not Found');
+    }
+
+    return employee;
+  }
+
   async addEmployee(req: CreateEmployeeDto): Promise<Employee> {
     const createdEmployee = new this.employeeModel(req);
     createdEmployee.role = 'employee';
@@ -53,6 +63,22 @@ export class EmployeesService {
         email: req.email,
       },
       { new: true },
+    );
+
+    if (!updatedEmployee) {
+      throw new NotFoundException('Employee not found for the given ID');
+    }
+
+    return updatedEmployee;
+  }
+
+  async updateEmployeeByEmail(
+    email: string,
+    password: string,
+  ): Promise<EmployeeDocument> {
+    const updatedEmployee = await this.employeeModel.findOneAndUpdate(
+      { email: email },
+      { password: password },
     );
 
     if (!updatedEmployee) {

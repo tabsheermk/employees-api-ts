@@ -5,16 +5,14 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Employee } from 'src/employees/schema/employees.schema';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
+import { EmployeesService } from 'src/employees/employees.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(Employee.name) private employeeModel: Model<Employee>,
+    private employeeService: EmployeesService,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
@@ -22,7 +20,7 @@ export class AuthService {
   async login(signupDto: LoginDto): Promise<{ accessToken: string }> {
     const { email, password } = signupDto;
 
-    let employee = await this.employeeModel.findOne({ email: email });
+    let employee = await this.employeeService.getEmployeeByEmail(email);
 
     if (!employee) {
       throw new NotFoundException('Employee with email not found');
@@ -37,16 +35,16 @@ export class AuthService {
         throw new BadRequestException("Password doesn't match");
       }
     } else {
-      const updatedEmployee = await this.employeeModel.findOneAndUpdate(
-        { email: email },
-        { password: hashedPassword, role: 'admin' },
+      const updatedEmployee = await this.employeeService.updateEmployeeByEmail(
+        email,
+        hashedPassword,
       );
 
       employee = updatedEmployee;
     }
 
     const token = this.jwtService.sign(
-      { id: employee?._id, role: employee?.role },
+      { id: (employee as any)?._id.toString(), role: employee?.role },
       {
         secret: this.configService.get<string>('JWT_SECRET'),
       },

@@ -16,6 +16,6 @@ import { AnalyticsModule } from 'src/analytics/analytics.module';
   ],
   controllers: [EmployeesController],
   providers: [EmployeesService],
-  exports: [MongooseModule, EmployeesService],
+  exports: [EmployeesService],
 })
 export class EmployeesModule {}
